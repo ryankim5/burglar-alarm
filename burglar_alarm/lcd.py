@@ -21,8 +21,8 @@ class LCD:
                 raise I2CNotFoundError("I2C of LCD is not found. Please check connection of wires.")
         self.lcd = Adafruit_CharLCD(pin_rs=0, pin_e=2, pins_db=[4,5,6,7], GPIO=self.mcp)
     
-    def display(self, message, cursor, clear=True):
-        """LCD.display(message, cursor, clear=True)
+    def display(self, message, cursor=(0, 0), clear=True):
+        """LCD.display(message, cursor=(0, 0), clear=True)
         The display function allows you to display text on a LCD."""
         self.mcp.output(self.mcp1, self.mcp2)
         self.lcd.begin(self.begin1, self.begin2)

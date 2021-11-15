@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-########################################################################
-# Filename    : Keypad.py
-# Description : The module of matrix keypad 
-# Author      : freenove
-# modification: 2016/07/13
-########################################################################
 import RPi.GPIO as GPIO 
 import time
 #class Key:Define some of the properties of Key
@@ -175,3 +168,20 @@ class Keypad(object):
             return True
         else:
             return False
+
+            
+class MatrixKeypad:
+    def __init__(self, debounceTime, rows, cols, keys, rowsPins, colsPins):
+        self.rows = rows
+        self.cols = cols
+        self.keys = keys
+        self.rowsPins = rowsPins
+        self.colsPins = colsPins
+        self.keypad = Keypad(self.keys, self.rowsPins, self.colsPins, self.rows, self.cols)
+        self.debounceTime = debounceTime
+    
+    def findPressedKey(self):
+        key = self.keypad.getKey()
+        if key != self.keypad.NULL:
+            return key
+        return None
