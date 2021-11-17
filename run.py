@@ -1,5 +1,8 @@
-from burglar_alarm import lcd, Keypad, wait
+from burglar_alarm import lcd, Keypad, wait, distance
 from datetime import datetime
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
 
 # MatrixKeypad Settings
 ROWS = 4
@@ -19,6 +22,11 @@ password = ""
 inputed_password = ""
 mode = ""
 
+# Distance Sensor Settings
+trigPin = 40
+echoPin = 37
+MAX_DISTANCE = 220
+timeOut = MAX_DISTANCE * 60
 
 def loop():
     global password, armed, mode, inputed_password
@@ -109,6 +117,7 @@ def loop():
         if len(second) == 1:
             second = "0" + second
         display.display(f"TIME: {hour}:{minute}:{second}", (0, 1), clear=False)
+        print(distance.DistanceSensor(echoPin, trigPin, MAX_DISTANCE, timeOut).getDistance())
 
 
 def destroy():
