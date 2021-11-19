@@ -1,0 +1,2 @@
+sudo ps -aux | grep python
+sudo kill -9 {ID}

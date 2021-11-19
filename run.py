@@ -1,4 +1,4 @@
-from burglar_alarm import lcd, Keypad, wait, distance
+from burglar_alarm import lcd, Keypad, wait, distance, buzzer
 from datetime import datetime
 import RPi.GPIO as GPIO
 
@@ -28,16 +28,26 @@ echoPin = 37
 MAX_DISTANCE = 220
 timeOut = MAX_DISTANCE * 60
 
+
+# Buzzer Settings
+is_buzzing = False
+buzzerPin = 29
+
+
 def loop():
-    global password, armed, mode, inputed_password
+    global password, armed, mode, inputed_password, is_buzzing, passwd
     display = lcd.LCD((3, 1), (16, 2))
     keypad = Keypad.MatrixKeypad(
         DEBOUNCE_TIME, ROWS, COLS, KEYS, ROWSPINS, COLSPINS)
+    distanceSensor = distance.DistanceSensor(
+        echoPin, trigPin, MAX_DISTANCE, timeOut)
+    bzr = buzzer.Buzzer(buzzerPin)
     if armed:
         display.display("ARMED")
     else:
         display.display("UNARMED")
     while True:
+        cm_far = distanceSensor.getDistance()
         key_pressed = keypad.findPressedKey()
         # if key_pressed:
         #     display.display("KEYPAD PRESSED")
@@ -45,6 +55,9 @@ def loop():
         #     break
         if key_pressed == "A":
             mode = "a"
+
+        if key_pressed == "B":
+            mode = "b"
 
         if mode == "a":
             display.display("SECURITY MODE")
@@ -101,10 +114,44 @@ def loop():
                                             "ARMED" if armed else "UNARMED")
                                     else:
                                         mode = ""
-                                        display.display("WRONG PASS" + "-" + "ARMED" if armed else "UNARMED")
+                                        display.display(
+                                            "WRONG PASS" + "-" + "ARMED" if armed else "UNARMED")
                             else:
                                 if key_pressed:
                                     inputed_password += key_pressed
+        elif mode == "b":
+            inputed_password = ""
+            if not is_buzzing:
+                msg = 'ARMED' if armed else 'UNARMED'
+                display.display(f"BZR NT-{msg}")
+                mode = ""
+            else:
+                display.display("Password...")
+                while True:
+                    if mode != "b":
+                        break
+
+                    key_pressed = keypad.findPressedKey()
+                    if key_pressed in ["A", "B", "C", "D"]:
+                        display.display("Numbers Only")
+                    elif key_pressed == "#":
+
+                        if not password:
+                            display.display("Passphrase should")
+                            display.display(
+                                "be not empty...", (0, 1), clear=False)
+                        else:
+                            if inputed_password == password:
+                                mode = ""
+                                display.display("BZR OFF")
+                                is_buzzing = False
+                            else:
+                                mode = ""
+                                display.display(
+                                    "WRONG PASS" + "-" + "ARMED" if armed else "UNARMED")
+                    else:
+                        if key_pressed:
+                            inputed_password += key_pressed
 
         time_now = datetime.now()
         hour, minute, second = (
@@ -117,11 +164,20 @@ def loop():
         if len(second) == 1:
             second = "0" + second
         display.display(f"TIME: {hour}:{minute}:{second}", (0, 1), clear=False)
-        print(distance.DistanceSensor(echoPin, trigPin, MAX_DISTANCE, timeOut).getDistance())
+
+        if armed:
+            if cm_far > 10:
+                is_buzzing = True
+
+        if is_buzzing:
+            bzr.on()
+        else:
+            bzr.off()
 
 
 def destroy():
     exit(1)
+    GPIO.cleanup()
 
 
 if __name__ == "__main__":

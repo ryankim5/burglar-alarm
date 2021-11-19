@@ -39,10 +39,10 @@ def loop():
         
 
 class DistanceSensor:
-    def __init__(self, echo, trig, max, timeout):
+    def __init__(self, echo, trig, max_d, timeout):
         self.echo = echo
         self.trig = trig
-        self.max_distance = max
+        self.max_distance = max_d
         self.timeout = timeout
         setup(self.trig, self.echo)
 
