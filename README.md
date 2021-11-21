@@ -23,6 +23,7 @@ You'll need:
 * 1 Phone Battery
 * 1 USB-C Cable
 * 1 Desktop with SSH (Windows, Mac, Linux, Chrome, and etc.)
+* 1 Buzzer
 
 ## Wiring
 Wire it like this:
