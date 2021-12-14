@@ -31,12 +31,6 @@ def setup(trigPin, echoPin):
     GPIO.setup(trigPin, GPIO.OUT)   # set trigPin to OUTPUT mode
     GPIO.setup(echoPin, GPIO.IN)    # set echoPin to INPUT mode
 
-def loop():
-    while(True):
-        distance = getSonar() # get distance
-        print ("The distance is : %.2f cm"%(distance))
-        time.sleep(1)
-        
 
 class DistanceSensor:
     def __init__(self, echo, trig, max_d, timeout):
