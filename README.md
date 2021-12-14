@@ -24,6 +24,7 @@ You'll need:
 * 1 USB-C Cable
 * 1 Desktop with SSH (Windows, Mac, Linux, Chrome, and etc.)
 * 1 Buzzer
+* 1 NPM Transitor
 
 ## Wiring
 Wire it like this:
